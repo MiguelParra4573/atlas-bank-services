@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-blacklisted-accounts
+      author: atlas-bank
+      changes:
+        - createTable:
+            tableName: blacklisted_accounts
+            columns:
+              - column:
+                  name: account_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: reason
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 001-create-account-limits
+      author: atlas-bank
+      changes:
+        - createTable:
+            tableName: account_limits
+            columns:
+              - column:
+                  name: account_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: currency
+                  type: char(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_amount_per_transaction
+                  type: numeric(19,4)
+                  constraints:
+                    nullable: false

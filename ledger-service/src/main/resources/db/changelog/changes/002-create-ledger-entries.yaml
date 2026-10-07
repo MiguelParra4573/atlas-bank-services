@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-ledger-entries
+      author: atlas-bank
+      changes:
+        - createTable:
+            tableName: ledger_entries
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: transaction_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ledger_entries_account
+                    references: accounts(id)
+              - column:
+                  name: direction
+                  type: varchar(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(19,4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: char(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: >
+              ALTER TABLE ledger_entries
+                ADD CONSTRAINT ck_ledger_entries_direction CHECK (direction IN ('DEBIT', 'CREDIT')),
+                ADD CONSTRAINT ck_ledger_entries_amount_positive CHECK (amount > 0)
+        - createIndex:
+            indexName: idx_ledger_entries_account_id
+            tableName: ledger_entries
+            columns:
+              - column:
+                  name: account_id
+        - createIndex:
+            indexName: idx_ledger_entries_transaction_id
+            tableName: ledger_entries
+            columns:
+              - column:
+                  name: transaction_id

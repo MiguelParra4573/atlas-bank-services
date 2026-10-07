@@ -1,0 +1,22 @@
+﻿server:
+  port: 18083
+
+spring:
+  application:
+    name: risk-service
+  datasource:
+    url: ${RISK_DB_URL:jdbc:postgresql://localhost:15433/risk}
+    username: ${RISK_DB_USER:risk}
+    password: ${RISK_DB_PASSWORD:risk}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus

@@ -1,0 +1,21 @@
+﻿server:
+  port: 18080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: transaction-orchestrator
+              uri: ${ORCHESTRATOR_BASE_URL:http://localhost:18081}
+              predicates:
+                - Path=/api/transactions/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus

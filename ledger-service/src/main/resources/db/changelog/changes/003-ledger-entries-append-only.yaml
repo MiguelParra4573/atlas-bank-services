@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-ledger-entries-append-only
+      author: atlas-bank
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE FUNCTION forbid_ledger_entries_mutation() RETURNS trigger AS $$
+              BEGIN
+                RAISE EXCEPTION 'ledger_entries is append-only: % is not allowed', TG_OP;
+              END;
+              $$ LANGUAGE plpgsql;
+
+              CREATE TRIGGER trg_ledger_entries_append_only
+                BEFORE UPDATE OR DELETE ON ledger_entries
+                FOR EACH ROW EXECUTE FUNCTION forbid_ledger_entries_mutation();
+      rollback:
+        - sql:
+            splitStatements: false
+            sql: |
+              DROP TRIGGER trg_ledger_entries_append_only ON ledger_entries;
+              DROP FUNCTION forbid_ledger_entries_mutation();

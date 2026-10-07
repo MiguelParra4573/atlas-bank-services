@@ -1,0 +1,28 @@
+﻿server:
+  port: 18081
+
+spring:
+  application:
+    name: transaction-orchestrator
+  datasource:
+    url: ${ORCHESTRATOR_DB_URL:jdbc:postgresql://localhost:15434/orchestrator}
+    username: ${ORCHESTRATOR_DB_USER:orchestrator}
+    password: ${ORCHESTRATOR_DB_PASSWORD:orchestrator}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+services:
+  ledger:
+    base-url: ${LEDGER_BASE_URL:http://localhost:18082}
+  risk:
+    base-url: ${RISK_BASE_URL:http://localhost:18083}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
